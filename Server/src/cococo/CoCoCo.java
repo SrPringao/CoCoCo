@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package cococo;
-import Server.UsuarioDAO;
+import cococo.Bd.UsuarioDAO;
 import cococo.Models.Usuario;
 import java.util.ArrayList;
 /**
@@ -16,8 +16,7 @@ public class CoCoCo {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here\
-     // TODO code application logic here
+    // TODO code application logic here
         Usuario usuario;
         UsuarioDAO UsuarioDAO = new UsuarioDAO();
         
@@ -25,11 +24,14 @@ public class CoCoCo {
          UsuarioDAO.add(usuario);
          
          
-          ArrayList <Usuario> datos;        
-         datos = UsuarioDAO.getALL();        
-         for (Usuario item : datos)
+         
+        ArrayList <Usuario> datos;        
+        datos = UsuarioDAO.getOnlineUsr();        
+        for (Usuario item : datos)
             System.out.println(item.id + " - " + item.nombre + " - " + item.Password );
         
+            Server server = new Server(1234);
+            server.start();
     }
     
 }
