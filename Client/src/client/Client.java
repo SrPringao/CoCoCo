@@ -1,44 +1,34 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package client;
 
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.IOException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.util.Scanner;
 
-/**
- *
- * @author PC
- */
 public class Client {
     private Socket clientSocket;
-  
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         Client correr = new Client();
         
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Ingresa tu nombre: ");
-        String mensaje = scanner.nextLine();
-        
-        correr.run(mensaje);
-
-
+            Scanner scanner = new Scanner(System.in);
+    
+            System.out.println("Ingresa tu mensaje: ");
+            correr.run("Héctor se ha unido a la conversación");
+            boolean session = true;
+        while (session == true) // cambiar por (session == true) y que cierre la conexión en cuanto se cierre sesión
+        {
+            String mensaje = scanner.nextLine();
+            mensaje = "Hector" + ": " + mensaje; // CAMBIAR "Hector" POR SELECT GLOBAL DEL USUARIO
+            
+            correr.run(mensaje);
+        }
+        scanner.close();
     }
     
     public void run(String mensaje) {
         try {
-            clientSocket = new Socket("192.168.1.70", 1234);
+            clientSocket = new Socket("192.168.84.62", 1458);
             OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
             out.write(mensaje + "\n");
             out.flush();
