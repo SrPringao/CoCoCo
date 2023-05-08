@@ -9,7 +9,7 @@ package Models;
  * @author franc
  */
 public class Usuario {
-        public int id;
+    public int id;
     public String nombre;
     public String Password;
     public int Estatus;

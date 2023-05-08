@@ -36,169 +36,153 @@ como parametro.
                         objeto de tipo ResultSet con los resultados.
 
 */
-public class UsuarioDAO extends Bd.BD
-{
-    public UsuarioDAO()
-    {
+public class UsuarioDAO extends Bd.BD {
+    public UsuarioDAO() {
         super();
     }
-    
 
     public boolean verificarUsuario(String username, String password) {
-    try {
-        PreparedStatement ps = getConnection().prepareStatement(
-                "SELECT COUNT(*) as count FROM usuario WHERE Username = ? AND Password = ? AND Estatus = 0"
-        );
-        ps.setString(1, username);
-        ps.setString(2, password);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt("count");
+        try {
+            PreparedStatement ps = getConnection().prepareStatement(
+                    "SELECT COUNT(*) as count FROM usuario WHERE Username = ? AND Password = ? AND Estatus = 0");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            int count = rs.getInt("count");
 
-        //si count es mayor a 0, significa que el usuario existe
-        return count > 0;
-    } catch(SQLException ex) {
-        System.out.println(ex.getMessage());
+            // si count es mayor a 0, significa que el usuario existe
+            return count > 0;
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        // si count es igual a 0, significa que el usuario no existe
+        return false;
     }
 
-    //si count es igual a 0, significa que el usuario no existe
-    return false;
-    }
+    public boolean addChat(Chat chat) {
+        try {
+            PreparedStatement ps;
+            ps = getConnection().prepareStatement("INSERT INTO chat (Id_Chat, Id_User, Message) values (?,?,?)");
+            /*
+             * a cada signo de interrogación se le asiga un numero coorespondiente
+             * a su posicion
+             * values ( ? , ? )
+             * 1 2
+             * 
+             * ps.setString(numero de signo de interrogacion, valor);
+             * ps.setInt(numero de signo de interrogacion, valor);
+             * ps.setDouble(numero de signo de interrogacion, valor);
+             * 
+             * aqui tambien se escoje el tipo de dato a asignar.
+             */
 
+            // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
+            ps.setInt(1, chat.idChat);
 
-    public boolean addChat(Chat chat) 
-    {
-        try
-        {
-        PreparedStatement ps;
-        ps = getConnection().prepareStatement("INSERT INTO chat (Id_Chat, Id_User, Message) values (?,?,?)");
-        /*
-            a cada signo de interrogación se le asiga un numero coorespondiente
-            a su posicion 
-                    values ( ? , ? )
-                             1   2
-        
-            ps.setString(numero de signo de interrogacion, valor); 
-            ps.setInt(numero de signo de interrogacion, valor); 
-            ps.setDouble(numero de signo de interrogacion, valor); 
-        
-            aqui tambien se escoje el tipo de dato a asignar.        
-        */
-        
-        // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
-        ps.setInt(1, chat.idChat); 
-        
-        // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
-        ps.setInt(2, chat.idUser); 
-        
-        ps.setString(3, chat.message); 
-        
-        return ps.executeUpdate()>0; //Ejecuta la instrucción SQL
-        } 
-        catch(SQLException ex)
-        {
+            // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
+            ps.setInt(2, chat.idUser);
+
+            ps.setString(3, chat.message);
+
+            return ps.executeUpdate() > 0; // Ejecuta la instrucción SQL
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         return false;
     }
 
-     public boolean add(Usuario Usuario) 
-    {
-        try
-        {
-        PreparedStatement ps;
-        ps = getConnection().prepareStatement("INSERT INTO usuario (Username, Password, Estatus) values (?,?,?)");
-        /*
-            a cada signo de interrogación se le asiga un numero coorespondiente
-            a su posicion 
-                    values ( ? , ? )
-                             1   2
-        
-            ps.setString(numero de signo de interrogacion, valor); 
-            ps.setInt(numero de signo de interrogacion, valor); 
-            ps.setDouble(numero de signo de interrogacion, valor); 
-        
-            aqui tambien se escoje el tipo de dato a asignar.        
-        */
-        
-        // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
-        ps.setString(1, Usuario.nombre); 
-        
-        // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
-        ps.setString(2, Usuario.Password); 
-        
-        ps.setInt(3, Usuario.Estatus); 
-        
-        return ps.executeUpdate()>0; //Ejecuta la instrucción SQL
-        } 
-        catch(SQLException ex)
-        {
+    public boolean add(Usuario Usuario) {
+        try {
+            PreparedStatement ps;
+            ps = getConnection().prepareStatement("INSERT INTO usuario (Username, Password, Estatus) values (?,?,?)");
+            /*
+             * a cada signo de interrogación se le asiga un numero coorespondiente
+             * a su posicion
+             * values ( ? , ? )
+             * 1 2
+             * 
+             * ps.setString(numero de signo de interrogacion, valor);
+             * ps.setInt(numero de signo de interrogacion, valor);
+             * ps.setDouble(numero de signo de interrogacion, valor);
+             * 
+             * aqui tambien se escoje el tipo de dato a asignar.
+             */
+
+            // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
+            ps.setString(1, Usuario.nombre);
+
+            // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
+            ps.setString(2, Usuario.Password);
+
+            ps.setInt(3, Usuario.Estatus);
+
+            return ps.executeUpdate() > 0; // Ejecuta la instrucción SQL
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
         return false;
     }
-    
-    public ArrayList<Usuario> getOnlineUsr()
-    {
+
+    public ArrayList<Usuario> getOnlineUsr() {
         ArrayList<Usuario> resultados = new ArrayList();
-        try 
-        {
-            PreparedStatement ps =  getConnection().prepareStatement("SELECT * FROM usuario WHERE Estatus = 1 ");
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM usuario WHERE Estatus = 1 ");
             ResultSet rs;
             Usuario Usuario;
-            rs = ps.executeQuery(); 
+            rs = ps.executeQuery();
 
-            while (rs.next())
-            {
+            while (rs.next()) {
                 Usuario = new Usuario();
-                Usuario.nombre = rs.getString("Username");         
+                Usuario.nombre = rs.getString("Username");
                 Usuario.id = rs.getInt("id");
                 Usuario.Password = rs.getString("Password");
                 Usuario.Estatus = rs.getInt("Estatus");
                 resultados.add(Usuario);
-            }            
-        }
-        catch(SQLException es)
-        {
+            }
+        } catch (SQLException es) {
             System.out.println(es.getMessage());
         }
         return resultados;
     }
 
-    
-    /*public boolean delete(int id)
-    {
-        int res = 0;
-        try 
-        {
-            PreparedStatement ps = getConnection().prepareStatement("DELETE FROM Persona where id = ?");
-            ps.setInt(1, id);
-            res = ps.executeUpdate();
-        }
-        catch (SQLException ex)
-        {
-            System.out.println(ex.getMessage());
-        }
-        return res>0;
-    }
-    public boolean update(Usuario u)
-    {
-        int res = 0;
-        try 
-        {
-            PreparedStatement ps = getConnection()
-                                .prepareStatement
-                                ("UPDATE persona SET nombre = ?, registro = ? WHERE id = ?");
-            ps.setString(1, u.nombre);
-            ps.setInt(2, u.);
-            ps.setInt(3, u.id);            
-            
-            res = ps.executeUpdate();
-        }
-        catch (SQLException ex)
-        {
-            System.out.println(ex.getMessage());
-        }
-        return res>0;
-    }*/
+    /*
+     * public boolean delete(int id)
+     * {
+     * int res = 0;
+     * try
+     * {
+     * PreparedStatement ps =
+     * getConnection().prepareStatement("DELETE FROM Persona where id = ?");
+     * ps.setInt(1, id);
+     * res = ps.executeUpdate();
+     * }
+     * catch (SQLException ex)
+     * {
+     * System.out.println(ex.getMessage());
+     * }
+     * return res>0;
+     * }
+     * public boolean update(Usuario u)
+     * {
+     * int res = 0;
+     * try
+     * {
+     * PreparedStatement ps = getConnection()
+     * .prepareStatement
+     * ("UPDATE persona SET nombre = ?, registro = ? WHERE id = ?");
+     * ps.setString(1, u.nombre);
+     * ps.setInt(2, u.);
+     * ps.setInt(3, u.id);
+     * 
+     * res = ps.executeUpdate();
+     * }
+     * catch (SQLException ex)
+     * {
+     * System.out.println(ex.getMessage());
+     * }
+     * return res>0;
+     * }
+     */
 }
