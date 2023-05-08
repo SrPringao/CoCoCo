@@ -74,44 +74,40 @@ public class Client extends JFrame implements ActionListener {
 
         System.out.println("Ingresa tu mensaje: ");
         String mensaje = scanner.nextLine();
-
-        Thread threadEnviar = new Thread(new Runnable() {
-            @Override
+        Thread hilo = new Thread(new Runnable(){
             public void run() {
-                try { // remitente es el wey al que quieres enviarle mensaje, se hace select de su nombre o su ip para poner ahí el dato
-                    Socket remitente = new Socket("192.168.1.70", 1234);
-                    client.Message(idUsr, idChat, mensaje, remitente);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                while (mensaje != null){
+                    client.Message(idUsr, idChat, mensaje);
                 }
-            }
-        });
-        threadEnviar.start();
-
-        Thread threadRecibir = new Thread(new Runnable() {
-            @Override
-            public void run() {
                 try {
                     BufferedReader in = new BufferedReader(new InputStreamReader(z.getInputStream()));
                     String input = in.readLine();
                     System.out.println("Mensaje recibido: " + input);
-                    z.close(); // esta cosa cierra la conexión
+                    
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-        threadRecibir.start();
+       hilo.start();
+}  
 
         // esto es para el login
-        new Client();
+        //new Client();
         // ---------------------
-    }
 
-    public void Message(int idUsr, int idChat, String mensaje, Socket remitente) { // ENVÍO DE MENSAJE
+
+
+
+
+
+
+
+
+    public void Message(int idUsr, int idChat, String mensaje) { // ENVÍO DE MENSAJE
         try {
-            clientSocket = new Socket("192.168.1.70", 1234);
-            String mensajeCompleto = idChat + "|" + idUsr + "|" + mensaje + "|" + remitente;
+            clientSocket = new Socket("192.168.84.62", 63658);
+            String mensajeCompleto = idChat + "|" + idUsr + "|" + mensaje;
             OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
             out.write(mensajeCompleto + "\n");
             out.flush();
@@ -125,7 +121,7 @@ public class Client extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, "Por favor, complete ambos campos");
     } else {
         try {
-            clientSocket = new Socket("192.168.1.70", 1234);
+            clientSocket = new Socket("192.168.84.62", 63658);
             OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
             out.write(usuario + "|" + contrasena + "\n");
             out.flush();
