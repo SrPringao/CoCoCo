@@ -6,9 +6,17 @@ import java.io.OutputStreamWriter;
 import java.util.Scanner;
 
 public class Client {
-    private Socket clientSocket;
+    private static Socket clientSocket;
+    
+    
     
     public static void main(String[] args) {
+        try {
+            clientSocket = new Socket("192.168.84.62", 1458);
+        } catch (Exception e) {
+            System.out.println("Error de conexión");
+        }
+        
         Client correr = new Client();
         
             Scanner scanner = new Scanner(System.in);
@@ -28,7 +36,6 @@ public class Client {
     
     public void run(String mensaje) {
         try {
-            clientSocket = new Socket("192.168.84.62", 1458);
             OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
             out.write(mensaje + "\n");
             out.flush();
