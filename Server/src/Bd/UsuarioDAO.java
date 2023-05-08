@@ -2,13 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cococo.Bd;
-
+package Bd;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import cococo.Models.Usuario;
 import java.util.ArrayList;
+
+import Models.Chat;
+import Models.Usuario;
+
 import java.sql.ResultSet;
 
 /*
@@ -34,7 +36,7 @@ como parametro.
                         objeto de tipo ResultSet con los resultados.
 
 */
-public class UsuarioDAO extends cococo.Bd.BD
+public class UsuarioDAO extends Bd.BD
 {
     public UsuarioDAO()
     {
@@ -64,7 +66,43 @@ public class UsuarioDAO extends cococo.Bd.BD
     }
 
 
-    public boolean add(Usuario Usuario) 
+    public boolean addChat(Chat chat) 
+    {
+        try
+        {
+        PreparedStatement ps;
+        ps = getConnection().prepareStatement("INSERT INTO chat (Id_Chat, Id_User, Message) values (?,?,?)");
+        /*
+            a cada signo de interrogación se le asiga un numero coorespondiente
+            a su posicion 
+                    values ( ? , ? )
+                             1   2
+        
+            ps.setString(numero de signo de interrogacion, valor); 
+            ps.setInt(numero de signo de interrogacion, valor); 
+            ps.setDouble(numero de signo de interrogacion, valor); 
+        
+            aqui tambien se escoje el tipo de dato a asignar.        
+        */
+        
+        // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
+        ps.setInt(1, chat.idChat); 
+        
+        // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
+        ps.setInt(2, chat.idUser); 
+        
+        ps.setString(3, chat.message); 
+        
+        return ps.executeUpdate()>0; //Ejecuta la instrucción SQL
+        } 
+        catch(SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+        return false;
+    }
+
+     public boolean add(Usuario Usuario) 
     {
         try
         {
