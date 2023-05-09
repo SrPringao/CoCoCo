@@ -43,10 +43,11 @@ public class Client {
             correr.run(mensaje);
             
             // Recepción
-            
+            /*
             BufferedReader in = new BufferedReader(new InputStreamReader(z.getInputStream()));
             String input = in.readLine();
             System.out.println("Mensaje recibido: " + input);
+            */
         }
         scanner.close();
     }
