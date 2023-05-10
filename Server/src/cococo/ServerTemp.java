@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.*;
 
@@ -27,6 +28,7 @@ import javax.swing.*;
  */
 public class ServerTemp {
 
+        private static ArrayList<ClientThread> usuariosConectados=new ArrayList<ClientThread>();
     /**
      * @param args the command line arguments
      */
@@ -76,8 +78,9 @@ public class ServerTemp {
                 
                 printConsole("Assigning new thread",consoleText);
                 
-                Thread cT=new ClientThread(client,inData,outData);
-                cT.start();
+                ClientThread cT=new ClientThread(client,inData,outData);
+                usuariosConectados.add(cT);
+                cT.run();
             }
             catch(Exception e)
             {
@@ -94,11 +97,12 @@ public class ServerTemp {
     
 }
 
-class ClientThread extends Thread
+class ClientThread implements Runnable
 {
-    final Socket s;
-    final InputStreamReader inData;
-    final OutputStreamWriter outData;
+    public final Socket s;
+    public final userName;
+    private final InputStreamReader inData;
+    private final OutputStreamWriter outData;
 
     public ClientThread(Socket s,InputStreamReader in,OutputStreamWriter out)
     {
@@ -110,14 +114,17 @@ class ClientThread extends Thread
     @Override
     public void run()
     {
-        try
+        while(s.isConnected())
         {
-            outData.write("Hola Mundos");
-            outData.flush();
-        }
-        catch(IOException e)
-        {
-            System.out.println("Could Not Send Message");
+            try
+            {
+                outData.write("Hola Mundos");
+                outData.flush();
+            }
+            catch(IOException e)
+            {
+                System.out.println("Could Not Send Message");
+            }
         }
     }
 }

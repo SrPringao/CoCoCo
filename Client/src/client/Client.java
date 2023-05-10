@@ -63,7 +63,7 @@ public class Client extends JFrame implements ActionListener {
     }
 
     private Socket clientSocket;
-
+/* 
     public static void main(String[] args) {
         int idChat = 1;
         int idUsr = 1;
@@ -107,7 +107,7 @@ public class Client extends JFrame implements ActionListener {
         new Client();
         // ---------------------
     }
-
+*/
     public void Message(int idUsr, int idChat, String mensaje, Socket remitente) { // ENVÍO DE MENSAJE
         try {
             clientSocket = new Socket("192.168.1.70", 1234);
