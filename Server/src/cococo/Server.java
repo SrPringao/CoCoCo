@@ -10,38 +10,19 @@ import java.net.Socket;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-/**
- *
- * @author PC
- */
 public class Server {
-    private Socket c;
-  
-  
-    private ServerSocket serverSocket;
-
-    public Server(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void start() {
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(1234);
+        System.out.println("Servidor iniciado, esperando conexiones...");
         while (true) {
-            try {
-                
-                System.out.println("Esperando...");
-                c = serverSocket.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                String input = in.readLine();
-                System.out.println("Mensaje recibido: " + input);
-                
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Conexión entrante desde " + clientSocket.getInetAddress().getHostAddress());
+            Thread t = new Thread(new ManejadorCliente(clientSocket));
+            t.start();
         }
     }
-
 }
