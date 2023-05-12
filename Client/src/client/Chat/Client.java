@@ -1,5 +1,5 @@
 
-package client;
+package client.Chat;
 
 import java.io.BufferedReader;
 import java.io.IOException;

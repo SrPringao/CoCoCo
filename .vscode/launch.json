@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "FrontWhats",
+            "request": "launch",
+            "mainClass": "client.Chat.FrontWhats",
+            "projectName": "CoCoCo_b33b3884"
+        },
+        {
+            "type": "java",
             "name": "Client",
             "request": "launch",
             "mainClass": "client.Client",
