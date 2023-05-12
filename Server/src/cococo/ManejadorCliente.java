@@ -22,7 +22,11 @@ public class ManejadorCliente implements Runnable {
 
       String inputLine;
       while ((inputLine = in.readLine()) != null) {
-        Server.sendMessage(inputLine,Server.usuariosConectados.get(clientSocket.hashCode()));
+        String[] datos=inputLine.split("\\|");
+        System.out.println(datos[0]);
+        System.out.println(datos[1]);
+        
+        Server.sendMessage(datos[1],Server.usuariosConectados.get(datos[0]));
       }
     } catch (IOException e) {
       e.printStackTrace();

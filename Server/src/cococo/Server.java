@@ -14,7 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 public class Server {
-    public static Map<Integer, Socket> usuariosConectados = new ConcurrentHashMap<>();
+    public static Map<String, Socket> usuariosConectados = new ConcurrentHashMap<>();
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(1234);
@@ -26,19 +26,18 @@ public class Server {
             Thread t = new Thread(new ManejadorCliente(clientSocket));
             t.start();
             System.out.println("Id del Hilo: " + t.getId());
-            usuariosConectados.put(clientSocket.hashCode(), clientSocket);
+            usuariosConectados.put(clientSocket.getInetAddress().getHostAddress(), clientSocket);
 
 
-            System.out.println(usuariosConectados.get(clientSocket.hashCode()));
+            System.out.println(usuariosConectados.get(clientSocket.getInetAddress().getHostAddress()));
         }
     }
 
     public static void sendMessage(String mensaje,Socket sender) throws IOException
     {
         System.out.println(mensaje);
-        mensaje="Ayudame Dios";
         PrintWriter out=new PrintWriter(sender.getOutputStream(),false);
-    out.write(mensaje+"\n");
+        out.write(mensaje+"\n");
         out.flush();
     }
 }
