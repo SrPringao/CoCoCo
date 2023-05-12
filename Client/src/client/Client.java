@@ -1,3 +1,4 @@
+
 package client;
 
 import java.io.BufferedReader;
@@ -32,4 +33,3 @@ public class Client {
         socket.close();
     }
 }
-
