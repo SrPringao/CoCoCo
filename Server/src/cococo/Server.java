@@ -43,7 +43,6 @@ public class Server {
         out.write(mensaje+"\n");
         out.flush();
     }
-
     public static void broadcastUsers() throws IOException
     {
         for(String key:ipConectadas)
@@ -54,4 +53,5 @@ public class Server {
     }
 
     
+}
 }
