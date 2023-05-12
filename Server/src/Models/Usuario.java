@@ -9,24 +9,26 @@ package Models;
  * @author franc
  */
 public class Usuario {
-    public int id;
-    public String nombre;
-    public String Password;
-    public int Estatus;
-    
-    public Usuario()
-    {
-        id = 0;
-        nombre = "";
-        Password = "";
-        Estatus = 0;
-    }
+    public int Id;
+public String Nombre;
+public String Password;
+public String Ip;
+public int Estatus;
 
-    public Usuario(String nombre, String Password, int Estatus) 
-    {
-        this.id = id;
-        this.nombre = nombre;
-        this.Password = Password;
-        this.Estatus = 0;
-    }
+public Usuario()
+{
+    Id = 0;
+    Nombre = "";
+    Password = "";
+    Ip = "0.0.0.0";
+    Estatus = 1;
+}
+
+public Usuario(String Nombre, String Password, String Ip, int Estatus) 
+{
+    this.Nombre = Nombre;
+    this.Password = Password;
+    this.Ip = Ip;
+    this.Estatus = Estatus;
+}
 }

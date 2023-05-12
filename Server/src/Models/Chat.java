@@ -10,19 +10,19 @@ package Models;
  */
 public class Chat {
 
-    public int idMessage;
-    public int idChat;
-    public int idUser;
-    public String message;
-
-    public Chat() {
+    public int IdMessage;
+    public int IdChat;
+    public int IdUser;
+    public String Message;
+    
+     public Chat() {
 
     }
 
-    public Chat(int idChat, int idUser, String message) {
-        this.idChat = idChat;
-        this.idUser = idUser;
-        this.message = message;
+    public Chat( int idChat, int idUser, String message) {
+        this.IdChat = idChat;
+        this.IdUser = idUser;
+        this.Message = message;
     }
-
 }
+
