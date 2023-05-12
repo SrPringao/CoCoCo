@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+
 package client;
 
 import java.io.BufferedReader;
@@ -12,21 +9,23 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
+    public static Socket socket;
     public static void main(String[] args) throws IOException {
-        String hostName = "localhost";
+        String hostName = "192.168.85.6";
         int portNumber = 1234;
 
-        Socket socket = new Socket(hostName, portNumber);
+        socket = new Socket(hostName, portNumber);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         Scanner scanner = new Scanner(System.in);
         String userInput;
         while ((userInput = scanner.nextLine()) != null) {
-            out.println(userInput);
-            System.out.println("Mensaje enviado: " + userInput);
+            String fromwho = "Etor";
+            userInput = fromwho + ": " + userInput;
+            out.println("192.168.85.7"+"|"+userInput+"|");
             String response = in.readLine();
-            System.out.println("Respuesta recibida: " + response);
+            System.out.println(response);
         }
 
         out.close();
