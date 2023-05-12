@@ -29,3 +29,4 @@ replay_pid*
 /Client/build/
 /Client/nbproject/private/
 /Server/build/
+/Server/nbproject/private/

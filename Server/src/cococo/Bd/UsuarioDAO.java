@@ -7,7 +7,7 @@ package cococo.Bd;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import cococo.Models.Usuario;
+import cococo.Models.*;
 import java.util.ArrayList;
 import java.sql.ResultSet;
 
@@ -40,36 +40,60 @@ public class UsuarioDAO extends cococo.Bd.BD
     {
         super();
     }
-    
 
-    public boolean verificarUsuario(String username, String password) {
-    try {
-        PreparedStatement ps = getConnection().prepareStatement(
-                "SELECT COUNT(*) as count FROM usuario WHERE Username = ? AND Password = ? AND Estatus = 0"
-        );
-        ps.setString(1, username);
+    
+    public boolean Login(String username,String password,String IP){
+        int id = 0;
+        try{
+            PreparedStatement ps = getConnection().prepareStatement(
+                "SELECT Id FROM usuario WHERE Username = ? AND Password = ? ");
+            ps.setString(1, username);
         ps.setString(2, password);
         ResultSet rs = ps.executeQuery();
+                rs.next();
+        id = rs.getInt("Id");
+            System.out.println(id);
+
+            if(id!=0){
+                  try{
+            PreparedStatement ds = getConnection()
+                                .prepareStatement
+                                ("UPDATE usuario SET IP = ?, Estatus = 1 WHERE id = ?");
+            ds.setString(1, IP);
+            ds.setInt(2, id);
+            ds.executeUpdate();
+            return true;
+        }
+        catch (SQLException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+            }else{
+                return false;
+            }
+        }catch(Exception e){
+            e.getMessage();
+            System.out.println(e);
+        }
+        
+        return false;
+    }
+    
+    public boolean addUser(Usuario Usuario) 
+    {
+        try{
+            PreparedStatement pd = getConnection().prepareStatement(
+                "SELECT COUNT(*) as count FROM usuario WHERE Username = ? AND Password = ?");
+        pd.setString(1, Usuario.Nombre);
+        pd.setString(2, Usuario.Password);
+        ResultSet rs = pd.executeQuery();
         rs.next();
         int count = rs.getInt("count");
-
-        //si count es mayor a 0, significa que el usuario existe
-        return count > 0;
-    } catch(SQLException ex) {
-        System.out.println(ex.getMessage());
-    }
-
-    //si count es igual a 0, significa que el usuario no existe
-    return false;
-    }
-
-
-    public boolean add(Usuario Usuario) 
-    {
+        if(count==0){
         try
         {
         PreparedStatement ps;
-        ps = getConnection().prepareStatement("INSERT INTO usuario (Username, Password, Estatus) values (?,?,?)");
+        ps = getConnection().prepareStatement("INSERT INTO usuario (Username, Password, IP,Estatus) values (?,?,?,?)");
         /*
             a cada signo de interrogación se le asiga un numero coorespondiente
             a su posicion 
@@ -84,12 +108,13 @@ public class UsuarioDAO extends cococo.Bd.BD
         */
         
         // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
-        ps.setString(1, Usuario.nombre); 
+        ps.setString(1, Usuario.Nombre); 
         
         // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
         ps.setString(2, Usuario.Password); 
         
-        ps.setInt(3, Usuario.Estatus); 
+        ps.setString(3, Usuario.Ip);
+        ps.setInt(4, Usuario.Estatus);
         
         return ps.executeUpdate()>0; //Ejecuta la instrucción SQL
         } 
@@ -97,15 +122,24 @@ public class UsuarioDAO extends cococo.Bd.BD
         {
             System.out.println(ex.getMessage());
         }
+        }else{
+            System.out.println("El usuario ya existe");
+            return false;
+        }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
         return false;
     }
     
-    public ArrayList<Usuario> getOnlineUsr()
+    public ArrayList<Usuario> getOnlineUsr(String IP)
     {
         ArrayList<Usuario> resultados = new ArrayList();
         try 
         {
-            PreparedStatement ps =  getConnection().prepareStatement("SELECT * FROM usuario WHERE Estatus = 1 ");
+            PreparedStatement ps =  getConnection().prepareStatement("SELECT * FROM usuario WHERE Estatus = 1 AND IP != ? ");
+            ps.setString(1, IP);
             ResultSet rs;
             Usuario Usuario;
             rs = ps.executeQuery(); 
@@ -113,10 +147,9 @@ public class UsuarioDAO extends cococo.Bd.BD
             while (rs.next())
             {
                 Usuario = new Usuario();
-                Usuario.nombre = rs.getString("Username");         
-                Usuario.id = rs.getInt("id");
-                Usuario.Password = rs.getString("Password");
-                Usuario.Estatus = rs.getInt("Estatus");
+                Usuario.Nombre = rs.getString("Username");         
+                Usuario.Id = rs.getInt("id");
+                Usuario.Ip = rs.getString("IP");
                 resultados.add(Usuario);
             }            
         }
@@ -126,7 +159,60 @@ public class UsuarioDAO extends cococo.Bd.BD
         }
         return resultados;
     }
+    
+     public boolean addMensaje(Chat chat) {
+        try {
+            PreparedStatement ps;
+            ps = getConnection().prepareStatement("INSERT INTO chat (Id_Chat, Id_User, Message) values (?,?,?)");
+            /*
+             * a cada signo de interrogación se le asiga un numero coorespondiente
+             * a su posicion
+             * values ( ? , ? )
+             * 1 2
+             * 
+             * ps.setString(numero de signo de interrogacion, valor);
+             * ps.setInt(numero de signo de interrogacion, valor);
+             * ps.setDouble(numero de signo de interrogacion, valor);
+             * 
+             * aqui tambien se escoje el tipo de dato a asignar.
+             */
 
+            // Sustituye al primer signo de interrogacion, por el valor de persona.nombre
+            ps.setInt(1, chat.IdChat);
+
+            // Sustituye al segundo signo de interrogacion, por el valor de persona.registro
+            ps.setInt(2, chat.IdUser);
+
+            ps.setString(3, chat.Message);
+
+            return ps.executeUpdate() > 0; // Ejecuta la instrucción SQL
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return false;
+    }
+     
+    public ArrayList<Chat> MensajesChat(int id){
+        ArrayList<Chat> Mensajes = new ArrayList();
+        try{
+             PreparedStatement ps =  getConnection().prepareStatement("SELECT * FROM Chat WHERE Id_Chat = ? ORDER BY Id_Chat ASC ");
+            ps.setInt(1, id);
+            ResultSet rs;
+            rs = ps.executeQuery(); 
+            
+            while (rs.next())
+            {
+                Chat Mensaje = new Chat();
+                Mensaje.IdChat = rs.getInt("Id_Chat");         
+                Mensaje.IdUser = rs.getInt("Id_User");
+                Mensaje.Message = rs.getString("Message");
+                Mensajes.add(Mensaje);
+            }            
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return Mensajes;
+    }
     
     /*public boolean delete(int id)
     {
