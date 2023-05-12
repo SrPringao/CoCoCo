@@ -23,7 +23,7 @@ import javax.swing.border.Border;
 
 public class UsuariosActivos extends JFrame {
 
-    public UsuariosActivos(ArrayList<Usuario> usuarios) {
+    public UsuariosActivos(ArrayList<Usuario> usuarios , int id) {
         // Configura la ventana principal
         setTitle("Usuarios activos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,7 +55,7 @@ public class UsuariosActivos extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Clickeaste en " + usuario.getNombre());
 
-                    ChatFrame chatFrame = new ChatFrame(usuario);
+                    ChatFrame chatFrame = new ChatFrame(usuario , id);
                 }
             });
             userButtonsPanel.add(userButton);

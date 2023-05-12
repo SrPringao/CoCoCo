@@ -36,7 +36,7 @@ public class ChatFrame extends JFrame {
     public ArrayList<Mensaje> mensajes;
 
 
-    public ChatFrame(Usuario usuario) {
+    public ChatFrame(Usuario usuario , int id) {
         this.usuario = usuario;
 
         //query DAO de mensajes
@@ -101,7 +101,7 @@ public class ChatFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String message = messageTextField.getText().trim();
                 if (!message.isEmpty()) {
-                    sendMessage(message);
+                    sendMessage(message , id);
                     messageTextField.setText("");
                 }
             }
@@ -118,7 +118,7 @@ public class ChatFrame extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String message = messageTextField.getText().trim();
                     if (!message.isEmpty()) {
-                        sendMessage(message);
+                        sendMessage(message , id);
                         messageTextField.setText("");
                     }
                 }
@@ -129,7 +129,7 @@ public class ChatFrame extends JFrame {
         setVisible(true);
     }
 
-    private void sendMessage(String message) {
+    private void sendMessage(String message , int id) {
         StyledDocument doc = chatTextPane.getStyledDocument();
         SimpleAttributeSet rightAlign = new SimpleAttributeSet();
         StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
@@ -142,6 +142,16 @@ public class ChatFrame extends JFrame {
 
             // Agregar el mensaje
             doc.insertString(doc.getLength(), "Tú: " + message + "\n\n", rightAlign);
+            Mensaje mensaje = new Mensaje(usuario.getId(), message);
+            String mensajeParticionado = "idchat" + "|"+ id + "|" + message;
+            // Enviar el mensaje al servidor
+            // Socket socket = new Socket("localhost", 5000);
+            // DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            // dos.writeUTF(mensajeParticionado);
+            // dos.close();
+            // socket.close();
+            System.out.println("Mensaje enviado: " + mensajeParticionado);
+            
 
         } catch (BadLocationException e) {
             e.printStackTrace();

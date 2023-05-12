@@ -13,6 +13,12 @@ public class Mensaje {
         this.Message = message;
     }
 
+    public Mensaje(int IdUser, String Message) {
+        this.IdUser = IdUser;
+        this.Message = Message;
+    }
+    
+
 
     public int getIdMessage() {
         return IdMessage;

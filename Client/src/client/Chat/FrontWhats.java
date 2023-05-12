@@ -31,7 +31,9 @@ public class FrontWhats {
             System.out.println(usuario);
         }
 
-        UsuariosActivos chat = new UsuariosActivos(usuarios);
+        int id = 1;
+
+        UsuariosActivos chat = new UsuariosActivos(usuarios,id);
     }
     
 }
