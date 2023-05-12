@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import Bd.UsuarioDAO;
+import Models.Chat;
+import Models.Usuario;
+
 public class ManejadorCliente implements Runnable {
   private Socket clientSocket;
   private PrintWriter out;
@@ -16,6 +20,8 @@ public class ManejadorCliente implements Runnable {
   }
 
   public void run() {
+    UsuarioDAO usuarioDAO = new UsuarioDAO();
+
     try {
       out = new PrintWriter(clientSocket.getOutputStream(), true);
       in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -23,9 +29,33 @@ public class ManejadorCliente implements Runnable {
       String inputLine;
       while ((inputLine = in.readLine()) != null) {
         String[] datos=inputLine.split("\\|");
-        System.out.println(datos[0]);
-        System.out.println(datos[1]);
         
+        switch(datos[0])
+        {
+          case "login":
+          {
+            System.out.println("Usuario:"+datos[1] + "Contraseña: " + datos[2]);
+            
+            break;
+          }
+          case "register":
+          {
+            break;
+          }
+          case "sendmessage":
+          {
+            Server.sendMessage(datos[1]+datos[2], clientSocket);
+            break;
+          }
+          case "sendgroup":
+          {
+            break;
+          }  
+        }
+
+
+
+
         Server.sendMessage(datos[1],Server.usuariosConectados.get(datos[0]));
       }
     } catch (IOException e) {
