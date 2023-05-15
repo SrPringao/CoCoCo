@@ -37,14 +37,23 @@ public class ChatFrame extends JFrame {
     private JTextField messageTextField;
     private JButton sendButton;
     public ArrayList<Mensaje> mensajes;
-
+     private PrintWriter out;
+    private BufferedReader in;
+    private Socket socket;
     public ChatFrame(Usuario usuario, int id) {
         this.usuario = usuario;
-
+        
+  try {
+            String hostName = "192.168.1.207";
+            socket = new Socket(hostName, 1234);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // query DAO de mensajes
         // MensajeDAO mensajeDAO = new MensajeDAO();
         // ArrayList<Mensaje> mensajes = mensajeDAO.getMensajes(usuario.getId());
-
         mensajes = new ArrayList<Mensaje>();
         /*
          * mensajes.add(new Mensaje(1, 1, 2, "Hola"));
@@ -139,84 +148,66 @@ public class ChatFrame extends JFrame {
         });
 
         setVisible(true);
+        Thread t = new Thread(this::receiveMessage);
+        t.start();
     }
 
-    public Socket socket;
-    PrintWriter out;
-    BufferedReader in;
-
     private void sendMessage(String message, int id, Usuario usuario) throws IOException {
-        StyledDocument doc = chatTextPane.getStyledDocument();
-        SimpleAttributeSet rightAlign = new SimpleAttributeSet();
-        StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
-        StyleConstants.setForeground(rightAlign, Color.WHITE);
-        StyleConstants.setBackground(rightAlign, Color.BLUE);
-        StyleConstants.setFontFamily(rightAlign, "Arial");
-        StyleConstants.setFontSize(rightAlign, 14); // Reducir el tamaño de fuente a 14
 
-        String hostName = "192.168.137.249";
+            StyledDocument doc = chatTextPane.getStyledDocument();
+            SimpleAttributeSet rightAlign = new SimpleAttributeSet();
+            StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
+            StyleConstants.setForeground(rightAlign, Color.WHITE);
+            StyleConstants.setBackground(rightAlign, Color.BLUE);
+            StyleConstants.setFontFamily(rightAlign, "Arial");
+            StyleConstants.setFontSize(rightAlign, 14); // Reducir el tamaño de fuente a 14
 
-        System.out.println(usuario.getIp());
+            //String hostName = "192.168.1.207";
+            System.out.println(usuario.getIp());
 
-        try {
-            socket = new Socket(hostName, 1234);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            // Agregar el mensaje
-            doc.insertString(doc.getLength(), "Tú: " + message + "\n\n", rightAlign);
-            Mensaje mensaje = new Mensaje(usuario.getId(), message);
-            String mensajeParticionado = "idchat" + "|" + id + "|" + message;
-            // Enviar el mensaje al servidor
-            // Socket socket = new Socket("localhost", 5000);
-            // DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-            // dos.writeUTF(mensajeParticionado);
-            // dos.close();
-            // socket.close();
-            System.out.println("send|" + usuario.getIp() + "|" + message);
-            out.println("send|" + usuario.getIp() + "|" + message + "\n");
-            String response = in.readLine();
-            System.out.println(response);
+            try {
+                //socket = new Socket(hostName, 1234);
+                // Agregar el mensaje
+                doc.insertString(doc.getLength(), "Tú: " + message + "\n\n", rightAlign);
+                String mensajeParticionado = "idchat" + "|" + id + "|" + message;
+                // Enviar el mensaje al servidor
+                // Socket socket = new Socket("localhost", 5000);
+                // DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                // dos.writeUTF(mensajeParticionado);
+                // dos.close();
+                // socket.close();
+                System.out.println("send|" + usuario.getIp() + "|" + message);
+                out.println("send|" + usuario.getIp() + "|" + message + "\n");
+                System.out.println("Mensaje enviado: " + mensajeParticionado);
 
-            System.out.println("Mensaje enviado: " + mensajeParticionado);
-            socket.close();
-        } catch (BadLocationException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void receiveMessage(String message) {
-        StyledDocument doc = chatTextPane.getStyledDocument();
-        SimpleAttributeSet leftAlign = new SimpleAttributeSet();
-        StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
-        StyleConstants.setForeground(leftAlign, Color.RED);
-        StyleConstants.setBackground(leftAlign, Color.WHITE);
-        StyleConstants.setFontFamily(leftAlign, "Arial");
-        StyleConstants.setFontSize(leftAlign, 16); // Aumentar el tamaño de fuente a 16
+    public void receiveMessage() {
 
-        mensajes = new ArrayList<Mensaje>();
-        /*
-         * mensajes.add(new Mensaje(1, 1, 2, "Hola"));
-         * mensajes.add(new Mensaje(2, 2, 1, "Hola, ¿cómo estás?"));
-         * mensajes.add(new Mensaje(3, 1, 2, "Bien, ¿y tú?"));
-         * mensajes.add(new Mensaje(4, 2, 1, "Bien, ¿qué haces?"));
-         * mensajes.add(new Mensaje(5, 1, 2, "Nada, ¿y tú?"));
-         * mensajes.add(new Mensaje(6, 2, 1, "Nada, ¿qué haces?"));
-         * mensajes.add(new Mensaje(7, 1, 2, "Nada, ¿y tú?"));
-         * mensajes.add(new Mensaje(8, 2, 1, "Nada, ¿qué haces?"));
-         * mensajes.add(new Mensaje(9, 1, 2, "Nada, ¿y tú?"));
-         */
-        // cargar lista de mensajes
-
-        for (Mensaje mensaje : mensajes) {
             try {
-                // Agregar el mensaje
-                doc.insertString(doc.getLength(), usuario.getNombre() + ": " + mensaje.getMessage() + "\n\n",
-                        leftAlign);
-                mensajes.add(new Mensaje(1, 1, 2, "socket.getInputStream()"));
+                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                while (true) {
+                    String message = in.readLine();
+                    System.out.println("Llego:" + message);
+                    if (message != null) {
+                        // Mostrar el mensaje recibido en el JTextPane
+                        StyledDocument doc = chatTextPane.getStyledDocument();
+                        SimpleAttributeSet leftAlign = new SimpleAttributeSet();
+                        StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
+                        StyleConstants.setForeground(leftAlign, Color.WHITE);
+                        StyleConstants.setBackground(leftAlign, Color.BLUE);
+                        StyleConstants.setFontFamily(leftAlign, "Arial");
+                        StyleConstants.setFontSize(leftAlign, 14);
+                        doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
 
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
+                    }
+                }
+                
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
     }

@@ -165,7 +165,7 @@ public class Client extends JFrame {
             JOptionPane.showMessageDialog(this, "Por favor, complete ambos campos");
         } else {
             try {
-                clientSocket = new Socket("192.168.137.249", 1234);
+                clientSocket = new Socket("192.168.1.207", 1234);
                 OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
                 out.write("login|" + usuario + "|" + contrasena + "\n");
                 out.flush();
