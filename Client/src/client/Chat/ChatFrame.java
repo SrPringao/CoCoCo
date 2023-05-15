@@ -1,5 +1,6 @@
 package client.Chat;
 
+import static client.Client.socket;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -210,5 +211,15 @@ public class ChatFrame extends JFrame {
             System.out.println(e.getMessage());
         }
 
+    }
+    
+    public void startSocket(){
+        try{
+            String hostName = "192.168.1.207";
+            socket = new Socket(hostName,1234);
+            out = new PrintWriter(socket.getOutputStream(),true);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
