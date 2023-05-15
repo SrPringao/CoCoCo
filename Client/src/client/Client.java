@@ -13,17 +13,22 @@ import javax.swing.BorderFactory;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 import java.io.PrintWriter;
+import client.Chat.*;
+import java.util.ArrayList;
+import java.io.ObjectInputStream;
 
 public class Client extends JFrame {
+    private static Socket clientSocket;
 
-    private static Socket z;
     private static final Color BACKGROUND_COLOR = new Color(81, 229, 161);
     Color verdeclaro = Color.decode("#17E7B7");
     Color verdeoscuro = Color.decode("#0a261f");
     Color gris = Color.decode("#58626C");
     Color verdechillon = Color.decode("#51e5a1");
+    ManejadorServidor chat;
 
-    public Client() {
+    public Client() throws IOException {
+
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1080, 720);
@@ -126,7 +131,6 @@ public class Client extends JFrame {
         boxForm.add(buttonPanel, BorderLayout.SOUTH);
 
         mainPanel.add(boxForm, BorderLayout.SOUTH);
-        // Agregar todos los paneles a un Box
 
         JPanel box = new JPanel();
         box.setLayout(new BorderLayout());
@@ -141,7 +145,6 @@ public class Client extends JFrame {
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y,
                 int width, int height) {
-            // TODO Auto-generated method stubs
             super.paintBorder(c, g, x, y, width, height);
             Graphics2D g2d = (Graphics2D) g;
             g2d.setStroke(new BasicStroke(12));
@@ -151,19 +154,18 @@ public class Client extends JFrame {
     }
 
     public static Socket socket;
+    private static Client client;
 
     public static void main(String[] args) throws IOException {
-        new Client();
+        client = new Client();
     }
-
-    private Socket clientSocket;
 
     public void enviarCredenciales(String usuario, String contrasena) {
         if (usuario.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete ambos campos");
         } else {
             try {
-                clientSocket = new Socket("192.168.137.153", 1234);
+                clientSocket = new Socket("192.168.137.249", 1234);
                 OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
                 out.write("login|" + usuario + "|" + contrasena + "\n");
                 out.flush();
@@ -171,13 +173,37 @@ public class Client extends JFrame {
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String respuesta = in.readLine();
 
-                if (respuesta.equals("login|true")) {
+                System.out.println(respuesta);
+                if (respuesta.contains("login|true")) {
                     // El usuario se ha autenticado correctamente
                     JOptionPane.showMessageDialog(this, "Autenticación exitosa");
+                    String[] partsResponse = respuesta.split("\\|");
+
+                    ArrayList<Usuario> usuarios = new ArrayList<>();
+                    String[] usersWithoutDiv = partsResponse[3].split("\\-");
+                    int i = 1;
+                    for (String item : usersWithoutDiv) {
+                        String[] partsUser = item.split("\\,");
+                        usuarios.add(new Usuario(i, partsUser[1], partsUser[0]));
+                        i++;
+                    }
+                    int id = Integer.parseInt(partsResponse[2]);
+                    client.setVisible(false);
+                    new UsuariosActivos(usuarios, id);
                 } else {
                     // El usuario no se ha autenticado correctamente
                     JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos");
                 }
+                chat = new ManejadorServidor(new BufferedReader(new InputStreamReader(clientSocket.getInputStream())));
+                while (clientSocket.isConnected()) {
+
+                    while (clientSocket.getInputStream() != null) {
+                        chat.run();
+                    }
+
+                }
+
+                clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
