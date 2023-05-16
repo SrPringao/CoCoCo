@@ -38,14 +38,15 @@ public class ChatFrame extends JFrame {
     private JTextField messageTextField;
     private JButton sendButton;
     public ArrayList<Mensaje> mensajes;
-     private PrintWriter out;
+    private PrintWriter out;
     private BufferedReader in;
     private Socket socket;
+
     public ChatFrame(Usuario usuario, int id) {
         this.usuario = usuario;
-        
-  try {
-            String hostName = "192.168.1.207";
+
+        try {
+            String hostName = "192.168.0.251";
             socket = new Socket(hostName, 1234);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -155,31 +156,31 @@ public class ChatFrame extends JFrame {
 
     private void sendMessage(String message, int id, Usuario usuario) throws IOException {
 
-            StyledDocument doc = chatTextPane.getStyledDocument();
-            SimpleAttributeSet rightAlign = new SimpleAttributeSet();
-            StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
-            StyleConstants.setForeground(rightAlign, Color.WHITE);
-            StyleConstants.setBackground(rightAlign, Color.BLUE);
-            StyleConstants.setFontFamily(rightAlign, "Arial");
-            StyleConstants.setFontSize(rightAlign, 14); // Reducir el tamaño de fuente a 14
+        StyledDocument doc = chatTextPane.getStyledDocument();
+        SimpleAttributeSet rightAlign = new SimpleAttributeSet();
+        StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
+        StyleConstants.setForeground(rightAlign, Color.WHITE);
+        StyleConstants.setBackground(rightAlign, Color.BLUE);
+        StyleConstants.setFontFamily(rightAlign, "Arial");
+        StyleConstants.setFontSize(rightAlign, 14); // Reducir el tamaño de fuente a 14
 
-            //String hostName = "192.168.1.207";
-            System.out.println(usuario.getIp());
+        // String hostName = "192.168.1.207";
+        System.out.println(usuario.getIp());
 
-            try {
-                //socket = new Socket(hostName, 1234);
-                // Agregar el mensaje
-                doc.insertString(doc.getLength(), "Tú: " + message + "\n\n", rightAlign);
-                String mensajeParticionado = "idchat" + "|" + id + "|" + message;
-                // Enviar el mensaje al servidor
-                // Socket socket = new Socket("localhost", 5000);
-                // DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                // dos.writeUTF(mensajeParticionado);
-                // dos.close();
-                // socket.close();
-                System.out.println("send|" + usuario.getIp() + "|" + message);
-                out.println("send|" + usuario.getIp() + "|" + message + "\n");
-                System.out.println("Mensaje enviado: " + mensajeParticionado);
+        try {
+            // socket = new Socket(hostName, 1234);
+            // Agregar el mensaje
+            doc.insertString(doc.getLength(), "Tú: " + message + "\n\n", rightAlign);
+            String mensajeParticionado = "idchat" + "|" + id + "|" + message;
+            // Enviar el mensaje al servidor
+            // Socket socket = new Socket("localhost", 5000);
+            // DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+            // dos.writeUTF(mensajeParticionado);
+            // dos.close();
+            // socket.close();
+            System.out.println("send|" + usuario.getIp() + "|" + message);
+            out.println("send|" + usuario.getIp() + "|" + message + "\n");
+            System.out.println("Mensaje enviado: " + mensajeParticionado);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,37 +189,37 @@ public class ChatFrame extends JFrame {
 
     public void receiveMessage() {
 
-            try {
-                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                while (true) {
-                    String message = in.readLine();
-                    System.out.println("Llego:" + message);
-                    if (message != null) {
-                        // Mostrar el mensaje recibido en el JTextPane
-                        StyledDocument doc = chatTextPane.getStyledDocument();
-                        SimpleAttributeSet leftAlign = new SimpleAttributeSet();
-                        StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
-                        StyleConstants.setForeground(leftAlign, Color.WHITE);
-                        StyleConstants.setBackground(leftAlign, Color.BLUE);
-                        StyleConstants.setFontFamily(leftAlign, "Arial");
-                        StyleConstants.setFontSize(leftAlign, 14);
-                        doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            while (true) {
+                String message = in.readLine();
+                System.out.println("Llego:" + message);
+                if (message != null) {
+                    // Mostrar el mensaje recibido en el JTextPane
+                    StyledDocument doc = chatTextPane.getStyledDocument();
+                    SimpleAttributeSet leftAlign = new SimpleAttributeSet();
+                    StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
+                    StyleConstants.setForeground(leftAlign, Color.WHITE);
+                    StyleConstants.setBackground(leftAlign, Color.BLUE);
+                    StyleConstants.setFontFamily(leftAlign, "Arial");
+                    StyleConstants.setFontSize(leftAlign, 14);
+                    doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
 
-                    }
                 }
-                
+            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
     }
-    
-    public void startSocket(){
-        try{
-            String hostName = "192.168.1.207";
-            socket = new Socket(hostName,1234);
-            out = new PrintWriter(socket.getOutputStream(),true);
-        }catch(Exception e){
+
+    public void startSocket() {
+        try {
+            String hostName = "192.168.0.251";
+            socket = new Socket(hostName, 1234);
+            out = new PrintWriter(socket.getOutputStream(), true);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

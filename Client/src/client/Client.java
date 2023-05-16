@@ -165,7 +165,7 @@ public class Client extends JFrame {
             JOptionPane.showMessageDialog(this, "Por favor, complete ambos campos");
         } else {
             try {
-                clientSocket = new Socket("192.168.1.207", 1234);
+                clientSocket = new Socket("192.168.0.251", 1234);
                 OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
                 out.write("login|" + usuario + "|" + contrasena + "\n");
                 out.flush();
@@ -188,7 +188,7 @@ public class Client extends JFrame {
                         i++;
                     }
                     int id = Integer.parseInt(partsResponse[2]);
-                    client.setVisible(false);
+                    client.dispose();
                     new UsuariosActivos(usuarios, id);
                 } else {
                     // El usuario no se ha autenticado correctamente

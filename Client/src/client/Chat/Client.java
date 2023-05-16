@@ -12,7 +12,7 @@ public class Client {
     public static Socket socket;
 
     public static void main(String[] args) throws IOException {
-        String hostName = "192.168.85.6";
+        String hostName = "192.168.0.251";
         int portNumber = 1234;
 
         socket = new Socket(hostName, portNumber);

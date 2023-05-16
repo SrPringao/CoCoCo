@@ -2,6 +2,15 @@ package client;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -14,6 +23,7 @@ public class RegistroUsuario extends JFrame {
     Color verdeoscuro = Color.decode("#0a261f");
     Color gris = Color.decode("#58626C");
     Color verdechillon = Color.decode("#51e5a1");
+    private Socket clientSocket;
 
     public RegistroUsuario() {
         // Configurar la ventana
@@ -46,8 +56,25 @@ public class RegistroUsuario extends JFrame {
         registrarseButton.setFocusPainted(false);
         registrarseButton.setBorderPainted(false);
         registrarseButton.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        registrarseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = nombreTextField.getText();
+                String password = String.valueOf(contrasenaField.getPassword());
+                String passwordC = String.valueOf(confirmarContrasenaField.getPassword());
 
-        // Crear el panel del formulario
+                try {
+                    Boolean respuesta = enviarRegistro(username, password, passwordC);
+                    if (respuesta) {
+                        dispose();
+                        new Client();
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+
         JPanel registroPanel = new JPanel();
         registroPanel.setLayout(new GridLayout(4, 1, 10, 10));
         // registroPanel.setBackground(verdeoscuro);
@@ -57,7 +84,6 @@ public class RegistroUsuario extends JFrame {
         constraints.anchor = GridBagConstraints.WEST;
         constraints.insets = new Insets(10, 10, 10, 10);
 
-        // Añadir los componentes al panel
         constraints.gridx = 0;
         constraints.gridy = 0;
         nombreLabel.setForeground(Color.WHITE);
@@ -90,20 +116,48 @@ public class RegistroUsuario extends JFrame {
 
         registroPanel.setBackground(verdeoscuro);
 
-        // Añadir el panel al contenido de la ventana
         getContentPane().add(registroPanel, BorderLayout.CENTER);
 
         setContentPane(registroPanel);
 
-        setLocationRelativeTo(null); // Centrar en la pantalla
-        setVisible(true);// Abrir en pantalla completa
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private static Socket clienSocket;
+
+    private Boolean enviarRegistro(String usuario, String contraseña, String confirmar)
+            throws UnknownHostException, IOException {
+
+        if (contraseña.equals(confirmar)) {
+            clientSocket = new Socket("192.168.0.251", 1234);
+            OutputStreamWriter out = new OutputStreamWriter(clientSocket.getOutputStream());
+            out.write("register|" + usuario + "|" + contraseña + "\n");
+            out.flush();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String respuesta = in.readLine();
+
+            System.out.println(respuesta);
+            if (respuesta.contains("true")) {
+                JOptionPane.showMessageDialog(this, "Usuario generado correctamente");
+                return true;
+            } else {
+                // El usuario no se ha autenticado correctamente
+                JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrectos");
+                return false;
+            }
+        } else {
+            // El usuario no se ha autenticado correctamente
+            JOptionPane.showMessageDialog(this, "Contraseñas diferentes");
+            return false;
+        }
     }
 
     class CustomeBorder extends AbstractBorder {
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y,
                 int width, int height) {
-            // TODO Auto-generated method stubs
             super.paintBorder(c, g, x, y, width, height);
             Graphics2D g2d = (Graphics2D) g;
             g2d.setStroke(new BasicStroke(12));
